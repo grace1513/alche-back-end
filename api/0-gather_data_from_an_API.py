@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-"""Gather an employee's TODO list progress from a REST API."""
 
 import requests
 import sys
@@ -11,21 +10,31 @@ if __name__ == "__main__":
     user_url = "https://jsonplaceholder.typicode.com/users/{}".format(
         employee_id
     )
-    todos_url = "https://jsonplaceholder.typicode.com/todos?userId={}".format(
-        employee_id
-    )
+    todos_url = "https://jsonplaceholder.typicode.com/todos"
 
-    employee = requests.get(user_url).json()
+    user = requests.get(user_url).json()
     todos = requests.get(todos_url).json()
 
-    employee_name = employee.get("name")
-    total_tasks = len(todos)
-    completed_tasks = [task for task in todos if task.get("completed")]
+    employee_name = user.get("name")
+
+    employee_tasks = [
+        task for task in todos
+        if task.get("userId") == employee_id
+    ]
+
+    completed_tasks = [
+        task for task in employee_tasks
+        if task.get("completed")
+    ]
+
+    total_tasks = len(employee_tasks)
     number_done = len(completed_tasks)
 
     print(
         "Employee {} is done with tasks({}/{}):".format(
-            employee_name, number_done, total_tasks
+            employee_name,
+            number_done,
+            total_tasks
         )
     )
 
